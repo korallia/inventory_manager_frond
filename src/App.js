@@ -1,24 +1,22 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import InventoryPage from './pages/Inventory/InventoryPage'; // Ton tableau d’inventaire principal
+// Tu peux ajouter d'autres pages ici
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div>
+  
+
+        <main style={{ padding: '2rem' }}>
+          <Routes>
+            <Route path="/" element={<InventoryPage />} />
+            {/* Autres routes */}
+          </Routes>
+        </main>
+      </div>
+    </Router>
   );
 }
 

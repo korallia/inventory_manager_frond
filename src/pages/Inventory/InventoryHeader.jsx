@@ -8,7 +8,7 @@ export const InventoryHeader = ({ products }) => {
   const [showAddCategory, setShowAddCategory] = useState(false);
   const [showAddUnit, setShowAddUnit] = useState(false);
   const [showAddProduct, setShowAddProduct] = useState(false);
-  const [search, setSearch] = useState("");
+  const [showSettings, setShowSettings] = useState(false);
 
   const { totalItems, totalValue } = useMemo(() => {
     const items = products?.length ?? 0;
@@ -29,64 +29,85 @@ export const InventoryHeader = ({ products }) => {
       maximumFractionDigits: 2,
     }).format(num);
 
+  const itemsLabel = totalItems === 1 ? "item" : "items";
+
   return (
     <>
-      {/* Toolbar (unchanged) */}
-      <div className="bg-slate-800 border border-slate-700 rounded-lg shadow-md p-5 text-slate-100 w-full">
-        <div className="flex flex-wrap items-center gap-3 md:gap-4 pb-4 border-b border-slate-700">
-          <button
-            className="inline-flex items-center justify-center h-10 px-4 rounded-md bg-indigo-700 text-white font-medium shadow hover:bg-indigo-500 transition-colors text-sm whitespace-nowrap"
-            onClick={() => setShowAddProduct(true)}
-          >
-            Ajouter un produit
-          </button>
+      <div className="bg-slate-800 border border-slate-600 rounded-xl shadow-md text-slate-100 w-full mb-6">
+        {/* Conteneur interne aligné avec l'inventaire */}
+        <div className="max-w-5xl mx-auto px-6 py-5 space-y-4">
+          {/* LIGNE 1 : Organisation / Utilisateur */}
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <div className="text-sm text-slate-400">Organisation</div>
+              <div className="text-lg font-semibold text-white">
+                Panassor Inc.
+              </div>
+            </div>
 
-          <button
-            className="inline-flex items-center justify-center h-10 px-4 rounded-md bg-slate-700 text-slate-100 font-medium shadow hover:bg-slate-600 transition-colors text-sm whitespace-nowrap"
-            onClick={() => setShowAddCategory(true)}
-          >
-            Ajouter une catégorie
-          </button>
-
-          <button
-            className="inline-flex items-center justify-center h-10 px-4 rounded-md bg-slate-700 text-slate-100 font-medium shadow hover:bg-slate-600 transition-colors text-sm whitespace-nowrap"
-            onClick={() => setShowAddUnit(true)}
-          >
-            Ajouter une unité
-          </button>
-
-          <div className="flex flex-row flex-wrap items-center gap-3 md:ml-auto w-full md:w-auto">
-            <input
-              type="text"
-              placeholder="Rechercher un produit..."
-              className="h-10 w-full md:w-72 px-3 rounded-md border border-slate-500 bg-slate-600 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <button
-              className="inline-flex items-center justify-center h-10 px-4 rounded-md border border-slate-500 bg-slate-600 text-slate-200 shadow-sm hover:bg-slate-600 hover:text-white transition-colors text-sm whitespace-nowrap"
-              onClick={() => setSearch("")}
-            >
-              Réinitialiser
-            </button>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-x-8 gap-y-4 pt-4 leading-relaxed text-slate-400">
-          <span className="inline-flex items-center font-medium px-2 py-0.5 rounded-full bg-slate-700 text-slate-200 leading-none">
-            {totalItems} items
-          </span>
-
-          <div>
-            <span className="text-slate-300">Valeur totale estimée :</span>{" "}
-            <span className="font-semibold text-slate-100">
-              {formatCurrency(totalValue)}
-            </span>
+            <div className="flex flex-wrap items-center gap-3 justify-start md:justify-end">
+              <div className="text-sm text-slate-400">
+                Connecté en tant que
+              </div>
+              <div className="text-white font-semibold">
+                Korallia Frenette
+              </div>
+              <button
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-slate-700 text-white text-sm font-medium hover:bg-slate-600 transition"
+                onClick={() => setShowSettings(true)}
+              >
+                <span className="text-lg">⚙</span> Paramètres
+              </button>
+            </div>
           </div>
 
-          <div>
-            <span className="text-slate-300">Dernière mise à jour :</span>{" "}
-            <span className="font-semibold text-slate-100">aujourd’hui</span>
+          {/* LIGNE 2 : Boutons à gauche / résumé à droite, sur UNE seule ligne (en desktop) */}
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            {/* Boutons d'action */}
+            <div className="flex flex-wrap gap-3">
+              {/* Action principale */}
+              <button
+                className="px-4 py-2 rounded-md bg-indigo-700 text-white font-medium hover:bg-indigo-500 text-sm"
+                onClick={() => setShowAddProduct(true)}
+              >
+                Ajouter un produit
+              </button>
+
+              {/* Actions secondaires */}
+              <button
+                className="px-4 py-2 rounded-md border border-slate-600 bg-transparent text-slate-200 font-medium hover:bg-slate-700 text-sm"
+                onClick={() => setShowAddCategory(true)}
+              >
+                Gérer les catégories
+              </button>
+              <button
+                className="px-4 py-2 rounded-md border border-slate-600 bg-transparent text-slate-200 font-medium hover:bg-slate-700 text-sm"
+                onClick={() => setShowAddUnit(true)}
+              >
+                Gérer les unités
+              </button>
+            </div>
+
+            {/* Résumé inventaire : à droite */}
+            <div className="flex flex-wrap items-center gap-4 md:justify-end text-slate-300 text-sm">
+              <div>
+                <span className="inline-block px-3 py-1 rounded-full bg-slate-700 text-white text-xs font-semibold">
+                  {totalItems} {itemsLabel}
+                </span>
+              </div>
+
+              <div>
+                Dernière mise à jour :{" "}
+                <span className="text-white font-semibold">aujourd’hui</span>
+              </div>
+
+              <div>
+                Valeur totale estimée :{" "}
+                <span className="text-white font-semibold">
+                  {formatCurrency(totalValue)}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -95,7 +116,7 @@ export const InventoryHeader = ({ products }) => {
       <Modal
         open={showAddCategory}
         onClose={() => setShowAddCategory(false)}
-        title="Nouvelle catégorie"
+        title="Gestion des catégories"
         maxWidth="28rem"
       >
         <AddCategoryForm onClose={() => setShowAddCategory(false)} />
@@ -104,8 +125,8 @@ export const InventoryHeader = ({ products }) => {
       <Modal
         open={showAddUnit}
         onClose={() => setShowAddUnit(false)}
-        title="Nouvelle unité"
-        maxWidth="36rem" // peut être un peu plus large si tu veux
+        title="Gestion des unités"
+        maxWidth="36rem"
       >
         <AddUnitForm onClose={() => setShowAddUnit(false)} />
       </Modal>

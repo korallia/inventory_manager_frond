@@ -1,28 +1,33 @@
-// AddProductForm.jsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-export function AddProductForm({
-  onClose,
-  onSaved,
-  categories = [],
-  units = [],
-}) {
+export function AddProductForm({ onClose }) {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
   const [cost, setCost] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [unitId, setUnitId] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [units, setUnits] = useState([]);
   const [successMessage, setSuccessMessage] = useState("");
   const [failureMessage, setFailureMessage] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetch("http://localhost:8000/categories/")
+      .then((r) => r.json())
+      .then(setCategories)
+      .catch(() => {});
+    fetch("http://localhost:8000/units/")
+      .then((r) => r.json())
+      .then(setUnits)
+      .catch(() => {});
+  }, []);
 
   const handleSubmit = async () => {
     if (!name.trim() || !quantity || !cost || !categoryId || !unitId) {
       return setFailureMessage("Tous les champs sont requis.");
     }
-    setFailureMessage("");
-    setLoading(true);
-
+    setFailureMessage(""); setLoading(true);
     try {
       const response = await fetch("http://localhost:8000/products/", {
         method: "POST",
@@ -35,14 +40,9 @@ export function AddProductForm({
           unit_id: Number(unitId),
         }),
       });
-
       if (response.ok) {
         setSuccessMessage("Produit ajouté avec succès !");
-        onSaved && onSaved(); // déclenche onRefresh côté parent
-        setTimeout(() => {
-          setSuccessMessage("");
-          onClose && onClose();
-        }, 1200);
+        setTimeout(() => { setSuccessMessage(""); onClose?.(); }, 1200);
       } else {
         const err = await response.json().catch(() => ({}));
         setFailureMessage(err?.detail || "Erreur lors de l’ajout.");
@@ -56,6 +56,7 @@ export function AddProductForm({
 
   return (
     <form className="space-y-4">
+      {/* grille 2 colonnes responsive */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="sm:col-span-2">
           <label className="block text-sm font-medium text-slate-300">
@@ -84,6 +85,7 @@ export function AddProductForm({
                        focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
+            placeholder="0"
           />
         </div>
 
@@ -100,6 +102,7 @@ export function AddProductForm({
                        focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             value={cost}
             onChange={(e) => setCost(e.target.value)}
+            placeholder="0.00"
           />
         </div>
 
@@ -116,9 +119,7 @@ export function AddProductForm({
           >
             <option value="">Sélectionner</option>
             {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
+              <option key={cat.id} value={cat.id}>{cat.name}</option>
             ))}
           </select>
         </div>
@@ -136,9 +137,7 @@ export function AddProductForm({
           >
             <option value="">Sélectionner</option>
             {units.map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.name}
-              </option>
+              <option key={u.id} value={u.id}>{u.name}</option>
             ))}
           </select>
         </div>
